@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Annu</title>
+<style>
+:root{--g:#1fb6ff;--dim:#8fa8c4;--line:#0a4a8a;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:radial-gradient(circle at 50% 28%,#06214a,#000 62%);color:#e8f4ff;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+[hidden]{display:none!important}
+.scr{position:fixed;inset:0;display:flex;flex-direction:column;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.card{margin:auto;width:min(92vw,380px);display:flex;flex-direction:column;gap:12px;align-items:stretch;text-align:center}
+.orb{width:70px;height:70px;border-radius:50%;margin:0 auto;border:2px solid var(--g);box-shadow:0 0 22px var(--g),inset 0 0 20px var(--g);animation:p 2.4s ease-in-out infinite}
+.orb.big{width:170px;height:170px}
+@keyframes p{50%{box-shadow:0 0 40px var(--g),inset 0 0 30px var(--g);transform:scale(1.05)}}
+h1{margin:0;letter-spacing:6px;color:var(--g);text-shadow:0 0 12px var(--g)}
+.sub{margin:0;color:var(--dim);font-size:14px}
+.tabs{display:flex;gap:6px}
+.tabs button{flex:1;padding:10px;border-radius:20px;border:1px solid var(--line);background:none;color:var(--dim);font-size:14px}
+.tabs button.on{border-color:var(--g);color:var(--g)}
+.tab{display:flex;flex-direction:column;gap:10px}
+input{width:100%;background:rgba(255,255,255,.08);border:1px solid var(--line);color:#fff;border-radius:14px;padding:13px 14px;font-size:16px;outline:none}
+input:focus{border-color:var(--g)}
+.pri{background:var(--g);color:#001a33;border:none;border-radius:14px;padding:13px;font-size:16px;font-weight:600}
+.sec{background:none;color:var(--g);border:1px solid var(--g);border-radius:14px;padding:12px;font-size:15px}
+a{color:var(--g);font-size:13px;cursor:pointer}
+.msg{min-height:20px;font-size:13px;color:#ffb4b4}
+.msg.ok{color:#9fe3b0}
+.top{display:flex;justify-content:flex-end;gap:8px;padding:10px 14px}
+.tog{border:none;background:rgba(255,255,255,.12);color:#fff;border-radius:20px;padding:9px 14px;font-size:13px}
+#hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-bottom:20px}
+.hi{color:var(--dim);font-size:17px;margin-top:34px}
+h2{font-size:32px;font-weight:600;text-align:center;line-height:1.15;margin:8px 28px 0}
+#log{flex:1;overflow-y:auto;padding:8px 16px;display:none;flex-direction:column;gap:10px}
+.chat #hero{display:none}.chat #log{display:flex}
+.m{max-width:85%;padding:10px 14px;border-radius:16px;line-height:1.45;font-size:15px;white-space:pre-wrap;overflow-wrap:anywhere}
+.a{align-self:flex-start;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14)}
+.u{align-self:flex-end;background:#0b4a9e}
+.dock{padding:26px 16px 18px;background:linear-gradient(transparent,rgba(20,80,170,.5) 55%,rgba(110,170,255,.85))}
+.pill{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);border-radius:34px;padding:6px 8px 6px 20px}
+.pill input{background:none;border:none;padding:10px 0}
+#send{width:44px;height:44px;border:none;border-radius:50%;background:none;color:#fff;font-size:20px}
+#admin{background:#020b1a;padding:12px 14px calc(12px + env(safe-area-inset-bottom));gap:10px;overflow:hidden;z-index:20}
+.ahead{display:flex;justify-content:space-between;align-items:center;padding-top:env(safe-area-inset-top)}
+#stats{color:var(--dim);font-size:14px}
+#ulist{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.u1{background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:14px;padding:10px 12px;font-size:14px}
+.u1 b{display:block;font-size:15px}
+.u1 span{color:var(--dim);font-size:12px;display:block;overflow-wrap:anywhere}
+.acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.acts button{border:1px solid var(--line);background:none;color:var(--g);border-radius:12px;padding:6px 10px;font-size:12px}
+.acts .danger{color:#ff9a9a;border-color:#7a2a2a}
+.tag{font-size:11px;color:#001a33;background:var(--g);border-radius:8px;padding:1px 6px;margin-left:6px}
+</style>
+</head>
+<body>
+
+<div id="auth" class="scr"><div class="card">
+  <div class="orb"></div><h1>ANNU</h1><p class="sub">Sign in to continue</p>
+  <div class="tabs"><button data-t="phone" class="on">Phone</button><button data-t="email">Email</button><button data-t="google">Google</button></div>
+  <div id="t-phone" class="tab">
+    <input id="ph" type="tel" placeholder="+91 98765 43210" autocomplete="tel">
+    <button id="sendCode" class="pri">Send code</button>
+    <div id="codeBox" class="tab" hidden><input id="code" inputmode="numeric" placeholder="6-digit code"><button id="verify" class="pri">Verify</button></div>
+  </div>
+  <div id="t-email" class="tab" hidden>
+    <input id="em" type="email" placeholder="Email" autocomplete="email">
+    <input id="pw" type="password" placeholder="Password (6+ characters)" autocomplete="current-password">
+    <button id="signin" class="pri">Sign in</button>
+    <button id="signup" class="sec">Create account</button>
+    <a id="forgot">Forgot password?</a>
+  </div>
+  <div id="t-google" class="tab" hidden><button id="gbtn" class="pri">Continue with Google</button></div>
+  <div id="msg" class="msg"></div>
+  <div id="recaptcha"></div>
+</div></div>
+
+<div id="app" class="scr" hidden>
+  <div class="top"><button id="adminBtn" class="tog" hidden>⚙️ Admin</button><button id="out" class="tog">Sign out</button></div>
+  <div id="hero"><div class="orb big"></div><div class="hi" id="hi">Hello buddy</div><h2>How can I help you today?</h2></div>
+  <div id="log"></div>
+  <div class="dock"><div class="pill"><input id="inp" placeholder="Ask anything…" autocomplete="off"><button id="send">➤</button></div></div>
+</div>
+
+<div id="admin" class="scr" hidden>
+  <div class="ahead"><b style="font-size:18px">Admin panel</b><button id="aclose" class="tog">Close</button></div>
+  <div id="stats"></div>
+  <input id="aq" placeholder="Search name, email or phone…">
+  <div id="ulist"></div>
+</div>
+
+<script type="module">
+/* 1) Your Firebase settings */
+const firebaseConfig={apiKey:"AIzaSyC1Ki5HFPmb4eXTSpzTSjIUKe6rewnVTVo",authDomain:"annu-app-5a05d.firebaseapp.com",projectId:"annu-app-5a05d",storageBucket:"annu-app-5a05d.firebasestorage.app",messagingSenderId:"353372528884",appId:"1:353372528884:web:d78b0d5f76f3ebe7f63ea1"};
+/* 2) OPTIONAL: your own server URL for general AI answers (POST {message, idToken} -> {text}) */
+const AI_ENDPOINT="";
+
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth,onAuthStateChanged,signOut,RecaptchaVerifier,signInWithPhoneNumber,signInWithEmailAndPassword,createUserWithEmailAndPassword,sendPasswordResetEmail,GoogleAuthProvider,signInWithPopup} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getFirestore,doc,getDoc,setDoc,updateDoc,deleteDoc,collection,getDocs,query,orderBy,limit,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const $=id=>document.getElementById(id);
+const fb=initializeApp(firebaseConfig),auth=getAuth(fb),db=getFirestore(fb);
+let me=null,isAdmin=false,confirmation=null,verifier=null,users=[],admins=new Set();
+
+function msg(t,ok){const m=$('msg');m.textContent=t||'';m.className='msg'+(ok?' ok':'')}
+function err(e){const c=(e&&e.code)||'';const map={'auth/invalid-credential':'Wrong email or password.','auth/email-already-in-use':'This email already has an account. Try Sign in.','auth/weak-password':'Password needs at least 6 characters.','auth/invalid-phone-number':'Enter the number with country code, like +91…','auth/invalid-verification-code':'That code is wrong.','auth/too-many-requests':'Too many tries. Please wait a bit.','auth/popup-closed-by-user':'Sign-in was cancelled.','auth/invalid-email':'That email doesn’t look right.'};msg(map[c]||('Something went wrong'+(c?' ('+c+')':'')+'.'))}
+
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
+  ['phone','email','google'].forEach(t=>$('t-'+t).hidden=t!==b.dataset.t);msg('')});
+
+$('sendCode').onclick=async()=>{
+  msg('');const n=$('ph').value.replace(/[\s-]/g,'');if(!/^\+\d{8,15}$/.test(n))return msg('Enter the number with country code, like +919876543210');
+  try{if(!verifier)verifier=new RecaptchaVerifier(auth,'recaptcha',{size:'invisible'});
+    confirmation=await signInWithPhoneNumber(auth,n,verifier);$('codeBox').hidden=false;msg('Code sent. Check your SMS.',true)}
+  catch(e){err(e);try{verifier.clear()}catch(_){}verifier=null}
+};
+$('verify').onclick=async()=>{try{await confirmation.confirm($('code').value.trim())}catch(e){err(e)}};
+$('signin').onclick=async()=>{try{await signInWithEmailAndPassword(auth,$('em').value.trim(),$('pw').value)}catch(e){err(e)}};
+$('signup').onclick=async()=>{try{await createUserWithEmailAndPassword(auth,$('em').value.trim(),$('pw').value)}catch(e){err(e)}};
+$('forgot').onclick=async()=>{const e=$('em').value.trim();if(!e)return msg('Type your email above first.');try{await sendPasswordResetEmail(auth,e);msg('Reset link sent to your email.',true)}catch(x){err(x)}};
+$('gbtn').onclick=async()=>{try{await signInWithPopup(auth,new GoogleAuthProvider())}catch(e){err(e)}};
+$('out').onclick=()=>signOut(auth);
+
+onAuthStateChanged(auth,async u=>{
+  me=u;
+  if(!u){$('app').hidden=true;$('admin').hidden=true;$('auth').hidden=false;return}
+  try{
+    const ref=doc(db,'users',u.uid),snap=await getDoc(ref);
+    if(snap.exists()&&snap.data().blocked){await signOut(auth);msg('This account has been blocked.');return}
+    const d={name:u.displayName||'',email:u.email||'',phone:u.phoneNumber||'',provider:(u.providerData[0]&&u.providerData[0].providerId)||'phone',lastLogin:serverTimestamp()};
+    if(snap.exists())await updateDoc(ref,d);else await setDoc(ref,{...d,blocked:false,createdAt:serverTimestamp()});
+    isAdmin=(await getDoc(doc(db,'admins',u.uid))).exists();
+  }catch(e){isAdmin=false;console.error(e)}
+  $('adminBtn').hidden=!isAdmin;
+  const nm=(u.displayName||'').split(' ')[0];$('hi').textContent=nm?'Hello '+nm:'Hello buddy';
+  $('auth').hidden=true;$('app').hidden=false;msg('');
+});
+
+/* Admin panel */
+$('adminBtn').onclick=async()=>{$('admin').hidden=false;await loadUsers()};
+$('aclose').onclick=()=>$('admin').hidden=true;
+$('aq').oninput=renderUsers;
+async function loadUsers(){
+  $('stats').textContent='Loading…';
+  try{
+    const s=await getDocs(query(collection(db,'users'),orderBy('lastLogin','desc'),limit(200)));
+    users=s.docs.map(d=>({id:d.id,...d.data()}));
+    admins=new Set((await getDocs(collection(db,'admins'))).docs.map(d=>d.id));
+    renderUsers();
+  }catch(e){$('stats').textContent='Could not load users. Check your Firestore rules.'}
+}
+function renderUsers(){
+  const q=$('aq').value.toLowerCase(),box=$('ulist');box.textContent='';
+  const list=users.filter(u=>[u.name,u.email,u.phone].join(' ').toLowerCase().includes(q));
+  $('stats').textContent=users.length+' users · '+users.filter(u=>u.blocked).length+' blocked · '+admins.size+' admins';
+  list.forEach(u=>{
+    const c=document.createElement('div');c.className='u1';
+    const b=document.createElement('b');b.textContent=u.name||u.email||u.phone||'(no name)';
+    if(admins.has(u.id)){const t=document.createElement('em');t.className='tag';t.textContent='admin';b.appendChild(t)}
+    const s1=document.createElement('span');s1.textContent=[u.email,u.phone].filter(Boolean).join(' · ')+' · '+u.provider;
+    const s2=document.createElement('span');s2.textContent='Last login: '+(u.lastLogin&&u.lastLogin.toDate?u.lastLogin.toDate().toLocaleString():'—')+(u.blocked?' · BLOCKED':'');
+    c.append(b,s1,s2);
+    if(u.id!==me.uid){
+      const a=document.createElement('div');a.className='acts';
+      const mk=(t,fn,cls)=>{const x=document.createElement('button');x.textContent=t;if(cls)x.className=cls;x.onclick=async()=>{try{await fn();await loadUsers()}catch(e){alert('Not allowed: '+(e.code||e.message))}};a.appendChild(x)};
+      mk(u.blocked?'Unblock':'Block',()=>updateDoc(doc(db,'users',u.id),{blocked:!u.blocked}));
+      mk(admins.has(u.id)?'Remove admin':'Make admin',()=>admins.has(u.id)?deleteDoc(doc(db,'admins',u.id)):setDoc(doc(db,'admins',u.id),{since:serverTimestamp()}));
+      mk('Delete record',()=>confirm('Delete this user’s record? Their login stays in Firebase Authentication.')?deleteDoc(doc(db,'users',u.id)):Promise.resolve(),'danger');
+      c.appendChild(a);
+    }
+    box.appendChild(c);
+  });
+}
+
+/* Chat */
+const log=$('log'),inp=$('inp');
+const SITES={youtube:'youtube.com',google:'google.com',gmail:'mail.google.com',instagram:'instagram.com',facebook:'facebook.com',whatsapp:'web.whatsapp.com',github:'github.com',wikipedia:'wikipedia.org',amazon:'amazon.com',netflix:'netflix.com',spotify:'open.spotify.com',maps:'maps.google.com'};
+const HI={'यूट्यूब':'youtube','गूगल':'google','जीमेल':'gmail','इंस्टाग्राम':'instagram','फेसबुक':'facebook','व्हाट्सएप':'whatsapp','नेटफ्लिक्स':'netflix','अमेज़न':'amazon','स्पॉटिफाई':'spotify','मैप्स':'maps'};
+function add(t,c){document.body.classList.add('chat');const d=document.createElement('div');d.className='m '+c;d.textContent=t;log.appendChild(d);log.scrollTop=log.scrollHeight;return d}
+function speak(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang=/[\u0900-\u097F]/.test(t)?'hi-IN':'en-US';speechSynthesis.speak(u)}catch(e){}}
+function say(t){add(t,'a');speak(t)}
+function local(q){
+  const s=q.toLowerCase().trim(),hi=/[\u0900-\u097F]/.test(q);
+  if(((/\btime\b/.test(s)&&!/timer/.test(s))||/समय|टाइम|कितने बजे/.test(s))&&s.length<40){const t=new Date().toLocaleTimeString(hi?'hi-IN':[],{hour:'numeric',minute:'2-digit'});return hi?'अभी '+t+' बजे हैं।':'It’s '+t+'.'}
+  if((/\b(date|today)\b/.test(s)||/तारीख|तिथि|डेट/.test(s))&&s.length<40){const t=new Date().toLocaleDateString(hi?'hi-IN':[],{weekday:'long',year:'numeric',month:'long',day:'numeric'});return hi?'आज '+t+' है।':'Today is '+t+'.'}
+  const m=s.match(/^(?:please\s+)?(?:open|launch|ओपन)\s+(.+)$/)||s.match(/^(.+?)\s+(?:खोलो|खोलिए|खोल दो)$/);
+  if(m){let n=HI[m[1].trim()]||m[1].trim();n=n.replace(/\.com$/,'').replace(/\s+/g,'').replace(/[^a-z0-9.\-]/g,'');if(n){const h=SITES[n]||(n.includes('.')?n:n+'.com');window.open('https://'+h,'_blank','noopener');return hi?h+' खोल रहा हूँ।':'Opening '+h+'.'}}
+  return null;
+}
+async function submit(){
+  const q=inp.value.trim();if(!q)return;inp.value='';add(q,'u');
+  const l=local(q);if(l)return say(l);
+  if(!AI_ENDPOINT)return say('I can tell the time, the date and open websites. To answer other questions, connect an AI server (see SETUP.md).');
+  const w=add('…','a');
+  try{const r=await fetch(AI_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q,idToken:await me.getIdToken()})});const j=await r.json();w.remove();say(j.text||'Sorry, no answer.')}
+  catch(e){w.remove();say('Sorry, I couldn’t reach the server.')}
+}
+$('send').onclick=submit;inp.addEventListener('keydown',e=>{if(e.key==='Enter')submit()});
+</script>
+</body>
+</html>
